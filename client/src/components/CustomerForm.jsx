@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { customersAPI } from '../services/api';
 
@@ -16,13 +16,7 @@ const CustomerForm = () => {
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    if (isEdit) {
-      fetchCustomer();
-    }
-  }, [id, isEdit]);
-
-  const fetchCustomer = async () => {
+  const fetchCustomer = useCallback(async () => {
     try {
       setLoading(true);
       const response = await customersAPI.getById(id);
@@ -33,7 +27,13 @@ const CustomerForm = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, navigate]);
+
+  useEffect(() => {
+    if (isEdit) {
+      fetchCustomer();
+    }
+  }, [isEdit, fetchCustomer]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { customersAPI, addressesAPI } from '../services/api';
 import AddressList from './AddressList';
@@ -15,11 +15,7 @@ const CustomerDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    fetchCustomerAndAddresses();
-  }, [id]);
-
-  const fetchCustomerAndAddresses = async () => {
+  const fetchCustomerAndAddresses = useCallback(async () => {
     try {
       setLoading(true);
       const [customerResponse, addressesResponse] = await Promise.all([
@@ -35,7 +31,11 @@ const CustomerDetail = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    fetchCustomerAndAddresses();
+  }, [id, fetchCustomerAndAddresses]);
 
   const handleDeleteCustomer = async () => {
     if (window.confirm('Are you sure you want to delete this customer and all their addresses?')) {

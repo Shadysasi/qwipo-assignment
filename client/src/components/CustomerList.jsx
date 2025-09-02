@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { customersAPI } from '../services/api';
 
@@ -16,11 +16,7 @@ const CustomerList = () => {
     pages: 0
   });
 
-  useEffect(() => {
-    fetchCustomers();
-  }, [pagination.page, pagination.limit, sortBy, sortOrder, searchTerm]);
-
-  const fetchCustomers = async () => {
+  const fetchCustomers = useCallback(async () => {
     try {
       setLoading(true);
       const params = {
@@ -41,7 +37,11 @@ const CustomerList = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [pagination.page, pagination.limit, sortBy, sortOrder, searchTerm]);
+
+  useEffect(() => {
+    fetchCustomers();
+  }, [fetchCustomers]);
 
   const handleSearch = (e) => {
     e.preventDefault();
